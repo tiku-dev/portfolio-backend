@@ -4,10 +4,11 @@ from apps.resume.models import BioProfile
 
 
 class Command(BaseCommand):
-    help = 'Synchronizes GitHub metrics and probes live project health statuses.'
+    help = 'Synchronizes GitHub metrics, repos, and probes live project health statuses.'
 
     def add_arguments(self, parser):
         parser.add_argument('--username', type=str, help='GitHub username to sync', default=None)
+        parser.add_argument('--force', action='store_true', help='Force fresh fetch bypassing cache')
 
     def handle(self, *args, **options):
         self.stdout.write(self.style.NOTICE("🚀 Starting portfolio sync..."))
@@ -18,11 +19,11 @@ class Command(BaseCommand):
             if profile and profile.github_url:
                 username = profile.github_url.rstrip('/').split('/')[-1]
             else:
-                username = 'octocat'
+                username = 'tiku-dev'
 
-        self.stdout.write(f"Syncing GitHub stats for '{username}'...")
-        stats = GitHubSyncService.sync_github_profile(username)
-        self.stdout.write(self.style.SUCCESS(f"✅ GitHub Stats: {stats}"))
+        self.stdout.write(f"Syncing GitHub stats & repos for '{username}'...")
+        stats = GitHubSyncService.sync_github_profile(username=username, force_refresh=options['force'], sync_projects=True)
+        self.stdout.write(self.style.SUCCESS(f"✅ GitHub Stats: {stats.get('username')} - {stats.get('public_repos')} repos, {stats.get('total_stars')} stars"))
 
         self.stdout.write("Probing project live demo health endpoints...")
         probes = HealthProbeService.probe_all_projects()

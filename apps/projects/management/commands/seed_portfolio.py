@@ -39,7 +39,7 @@ class Command(BaseCommand):
 
         # 2. Bio Profile
         profile, _ = BioProfile.objects.update_or_create(
-            full_name="Alex Mercer",
+            full_name="Tiku Faith",
             defaults={
                 "headline": "Senior Full Stack & Systems Engineer",
                 "summary": (
@@ -47,11 +47,11 @@ class Command(BaseCommand):
                     "and scalable API architectures using React, TypeScript, Tailwind CSS, Django, PostgreSQL, and Redis. "
                     "Passionate about end-to-end performance, fluid user interfaces, and engineering excellence."
                 ),
-                "email": "alex.mercer.eng@example.com",
-                "location": "London, UK (Open to Global Remote)",
-                "github_url": "https://github.com/octocat",
-                "linkedin_url": "https://linkedin.com/in/octocat",
-                "website_url": "https://alexmercer.dev",
+                "email": "tikupy1.com",
+                "location": "Global / Remote",
+                "github_url": "https://github.com/tiku-dev",
+                "linkedin_url": "https://linkedin.com/in/tiku-dev",
+                "website_url": "https://tiku-dev.github.io",
                 "available_for_hire": True,
                 "availability_notice": "Available for Senior Full Stack & Lead Roles"
             }
@@ -77,7 +77,7 @@ class Command(BaseCommand):
                     "100/100 Lighthouse performance score with code-splitting and responsive mobile layout",
                     "Sustained 15,000 req/sec telemetry streams with zero message loss"
                 ],
-                "github_url": "https://github.com/octocat/Spoon-Knife",
+                "github_url": "https://github.com/tiku-dev/portfolio-frontend",
                 "demo_url": "https://httpbin.org/status/200",
                 "health_check_url": "https://httpbin.org/status/200",
                 "featured": True,
@@ -116,7 +116,7 @@ class Command(BaseCommand):
                     "Isolated 200+ distinct enterprise customer workspaces on a single cluster",
                     "Zero cross-tenant data leakage verified by independent penetration audits"
                 ],
-                "github_url": "https://github.com/octocat/Hello-World",
+                "github_url": "https://github.com/tiku-dev/portfolio-backend",
                 "demo_url": "https://httpbin.org/status/200",
                 "health_check_url": "https://httpbin.org/status/200",
                 "featured": True,

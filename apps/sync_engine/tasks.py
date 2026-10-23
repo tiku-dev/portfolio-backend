@@ -16,13 +16,13 @@ from apps.resume.models import BioProfile
 @shared_task
 def sync_github_task():
     profile = BioProfile.objects.first()
-    username = 'octocat'
+    username = 'tiku-dev'
     if profile and profile.github_url:
         parts = profile.github_url.rstrip('/').split('/')
         if parts:
             username = parts[-1]
 
-    return GitHubSyncService.sync_github_profile(username=username)
+    return GitHubSyncService.sync_github_profile(username=username, sync_projects=True)
 
 
 @shared_task
