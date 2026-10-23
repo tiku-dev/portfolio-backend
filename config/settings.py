@@ -19,9 +19,16 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True').strip().lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0').split(',')
+_raw_hosts = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0,.vercel.app')
+if _raw_hosts.strip() == '*':
+    ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = [h.strip() for h in _raw_hosts.split(',') if h.strip()]
+    if '.vercel.app' not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append('.vercel.app')
 
 CSRF_TRUSTED_ORIGINS = [
+    'https://*.vercel.app',
     'https://*.ngrok-free.app',
     'https://*.ngrok.app',
     'https://*.ngrok.io',
@@ -57,6 +64,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -90,10 +98,19 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-if not DEBUG and os.getenv("DATABASE_URL"):
+# Database Configuration
+# Uses PostgreSQL when DATABASE_URL is configured (e.g. Vercel production with Neon DB),
+# falling back gracefully to SQLite for local development.
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip().strip("'").strip('"')
+
+if DATABASE_URL and (not DEBUG or os.getenv("USE_POSTGRES", "False").lower() == "true"):
     try:
-        import psycopg
-        tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
+        try:
+            import psycopg
+        except ImportError:
+            import psycopg2
+
+        tmpPostgres = urlparse(DATABASE_URL)
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
@@ -101,7 +118,7 @@ if not DEBUG and os.getenv("DATABASE_URL"):
                 'USER': tmpPostgres.username,
                 'PASSWORD': tmpPostgres.password,
                 'HOST': tmpPostgres.hostname,
-                'PORT': 5432,
+                'PORT': tmpPostgres.port or 5432,
                 'OPTIONS': dict(parse_qsl(tmpPostgres.query)),
             }
         }
@@ -155,8 +172,17 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
