@@ -1,4 +1,5 @@
 import threading
+import logging
 from django.core.mail import send_mail
 from django.conf import settings
 from rest_framework import generics, status
@@ -9,19 +10,24 @@ from .models import Inquiry
 from .serializers import InquiryCreateSerializer
 from .throttling import ContactSubmissionThrottle
 
+logger = logging.getLogger(__name__)
+
 
 def send_email_async(subject, body, to_email):
     def _target():
         try:
+            from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@portfolio.local')
             send_mail(
                 subject=subject,
                 message=body,
-                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@portfolio.local'),
+                from_email=from_email,
                 recipient_list=[to_email],
-                fail_silently=True,
+                fail_silently=False,
             )
-        except Exception:
-            pass
+            print(f"[Contact Email] Notification successfully sent to {to_email}")
+        except Exception as e:
+            logger.exception("Failed to send contact notification email: %s", e)
+            print(f"[Contact Email Error] Could not send email to {to_email}: {e}")
 
     thread = threading.Thread(target=_target, daemon=True)
     thread.start()
