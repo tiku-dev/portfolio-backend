@@ -18,6 +18,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True').strip().lower() in ('true', '1', 'yes')
+# DEBUG=False
 
 _raw_hosts = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0,.vercel.app')
 if _raw_hosts.strip() == '*':
@@ -101,34 +102,50 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database Configuration
 # Uses PostgreSQL when DATABASE_URL is configured (e.g. Vercel production with Neon DB),
 # falling back gracefully to SQLite for local development.
-DATABASE_URL = os.getenv("DATABASE_URL", "").strip().strip("'").strip('"')
+# DATABASE_URL = os.getenv("DATABASE_URL", "").strip().strip("'").strip('"')
 
-if DATABASE_URL and (not DEBUG or os.getenv("USE_POSTGRES", "False").lower() == "true"):
-    try:
-        try:
-            import psycopg
-        except ImportError:
-            import psycopg2
+# if DATABASE_URL and (not DEBUG or os.getenv("USE_POSTGRES", "False").lower() == "true"):
+#     try:
+#         try:
+#             import psycopg
+#         except ImportError:
+#             import psycopg2
 
-        tmpPostgres = urlparse(DATABASE_URL)
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': tmpPostgres.path.replace('/', ''),
-                'USER': tmpPostgres.username,
-                'PASSWORD': tmpPostgres.password,
-                'HOST': tmpPostgres.hostname,
-                'PORT': tmpPostgres.port or 5432,
-                'OPTIONS': dict(parse_qsl(tmpPostgres.query)),
-            }
+#         tmpPostgres = urlparse(DATABASE_URL)
+#         DATABASES = {
+#             'default': {
+#                 'ENGINE': 'django.db.backends.postgresql',
+#                 'NAME': tmpPostgres.path.replace('/', ''),
+#                 'USER': tmpPostgres.username,
+#                 'PASSWORD': tmpPostgres.password,
+#                 'HOST': tmpPostgres.hostname,
+#                 'PORT': tmpPostgres.port or 5432,
+#                 'OPTIONS': dict(parse_qsl(tmpPostgres.query)),
+#             }
+#         }
+#     except ImportError:
+#         DATABASES = {
+#             'default': {
+#                 'ENGINE': 'django.db.backends.sqlite3',
+#                 'NAME': BASE_DIR / 'db.sqlite3',
+#             }
+#         }
+
+if not DEBUG:
+
+    tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': tmpPostgres.path.replace('/', ''),
+            'USER': tmpPostgres.username,
+            'PASSWORD': tmpPostgres.password,
+            'HOST': tmpPostgres.hostname,
+            'PORT': 5432,
+            'OPTIONS': dict(parse_qsl(tmpPostgres.query)),
         }
-    except ImportError:
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': BASE_DIR / 'db.sqlite3',
-            }
-        }
+    }
 else:
     DATABASES = {
         'default': {
