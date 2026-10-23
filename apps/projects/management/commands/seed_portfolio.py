@@ -12,6 +12,10 @@ class Command(BaseCommand):
 
         # 1. Tags
         tags_data = [
+            ("React", "frontend", "si-react", "#61DAFB"),
+            ("TypeScript", "frontend", "si-typescript", "#3178C6"),
+            ("Next.js", "frontend", "si-nextdotjs", "#000000"),
+            ("Tailwind CSS", "frontend", "si-tailwindcss", "#06B6D4"),
             ("Django", "backend", "si-django", "#092E20"),
             ("Python", "backend", "si-python", "#3776AB"),
             ("PostgreSQL", "database", "si-postgresql", "#4169E1"),
@@ -20,8 +24,6 @@ class Command(BaseCommand):
             ("Docker", "devops", "si-docker", "#2496ED"),
             ("Kubernetes", "devops", "si-kubernetes", "#326CE5"),
             ("FastAPI", "backend", "si-fastapi", "#009688"),
-            ("React", "frontend", "si-react", "#61DAFB"),
-            ("TypeScript", "frontend", "si-typescript", "#3178C6"),
             ("GraphQL", "backend", "si-graphql", "#E10098"),
         ]
 
@@ -36,14 +38,14 @@ class Command(BaseCommand):
         self.stdout.write(f"Created {len(tag_objs)} tags.")
 
         # 2. Bio Profile
-        profile, _ = BioProfile.objects.get_or_create(
+        profile, _ = BioProfile.objects.update_or_create(
             full_name="Alex Mercer",
             defaults={
-                "headline": "Senior Backend & Distributed Systems Engineer",
+                "headline": "Senior Full Stack & Systems Engineer",
                 "summary": (
-                    "Backend Engineer specializing in resilient distributed systems, asynchronous event-driven pipelines, "
-                    "and scalable API architectures using Django, PostgreSQL, and Redis. Passionate about system observability, "
-                    "database query optimization, and engineering excellence."
+                    "Full Stack Engineer specializing in reactive web applications, resilient distributed systems, "
+                    "and scalable API architectures using React, TypeScript, Tailwind CSS, Django, PostgreSQL, and Redis. "
+                    "Passionate about end-to-end performance, fluid user interfaces, and engineering excellence."
                 ),
                 "email": "alex.mercer.eng@example.com",
                 "location": "London, UK (Open to Global Remote)",
@@ -51,29 +53,29 @@ class Command(BaseCommand):
                 "linkedin_url": "https://linkedin.com/in/octocat",
                 "website_url": "https://alexmercer.dev",
                 "available_for_hire": True,
-                "availability_notice": "Available for Senior Backend / Staff roles"
+                "availability_notice": "Available for Senior Full Stack & Lead Roles"
             }
         )
 
         # 3. Case Study Projects
-        p1, _ = Project.objects.get_or_create(
-            slug="distributed-event-streamer",
+        p1, _ = Project.objects.update_or_create(
+            slug="collaborative-analytics-platform",
             defaults={
-                "title": "High-Throughput Distributed Event Streamer",
-                "tagline": "Real-time webhook and audit stream processing 20M+ daily events with guaranteed idempotency",
+                "title": "Real-Time Collaborative Analytics Platform",
+                "tagline": "Reactive data visualization dashboard with WebSocket synchronization and high-throughput ingestion",
                 "problem_statement": (
-                    "Third-party integrations caused burst traffic spikes that overwhelmed downstream relational databases, "
-                    "leading to deadlocks and dropped event deliveries during peak hours."
+                    "Distributed teams struggled with siloed analytics and out-of-sync dashboards during live product launches, "
+                    "causing decision delays and conflicting metric interpretations."
                 ),
                 "architecture_overview": (
-                    "Architected a decoupled ingestion pipeline using Django REST Framework, Redis Streams, and Celery worker pools. "
-                    "Implemented distributed idempotency keys via Redis SETNX and dynamic backpressure throttling. "
-                    "Analytical audit logs were batched into PostgreSQL using COPY streams."
+                    "Architected a responsive React 19 / TypeScript frontend with Tailwind CSS and WebSockets, "
+                    "backed by Django REST Framework, Redis Streams, and Celery worker pools. Built optimistic UI updates "
+                    "with live presence cursors and sub-25ms ingestion."
                 ),
                 "key_achievements": [
-                    "Zero event loss during downstream database maintenance windows",
-                    "Maintained sub-25ms P99 API ingestion latency under 15,000 req/sec loads",
-                    "Reduced database connection pool exhaustion by 90% via connection pooling"
+                    "Sub-25ms end-to-end telemetry propagation via WebSocket event pipelines",
+                    "100/100 Lighthouse performance score with code-splitting and responsive mobile layout",
+                    "Sustained 15,000 req/sec telemetry streams with zero message loss"
                 ],
                 "github_url": "https://github.com/octocat/Spoon-Knife",
                 "demo_url": "https://httpbin.org/status/200",
@@ -85,34 +87,34 @@ class Command(BaseCommand):
                 "github_forks": 48
             }
         )
-        p1.tags.set([tag_objs['Django'], tag_objs['Python'], tag_objs['Redis'], tag_objs['Celery'], tag_objs['PostgreSQL'], tag_objs['Docker']])
+        p1.tags.set([tag_objs['React'], tag_objs['TypeScript'], tag_objs['Tailwind CSS'], tag_objs['Django'], tag_objs['Python'], tag_objs['Redis'], tag_objs['PostgreSQL'], tag_objs['Docker']])
 
-        ProjectMetric.objects.get_or_create(project=p1, label="Throughput", value="15,000 req/s", description="Peak ingestion capacity without event drops")
-        ProjectMetric.objects.get_or_create(project=p1, label="P99 Latency", value="24ms", description="Measured across 50 million simulated payloads")
-        ProjectMetric.objects.get_or_create(project=p1, label="Cost Reduction", value="40%", description="Optimized Redis memory footprint via hash sharding")
+        ProjectMetric.objects.update_or_create(project=p1, label="Throughput", defaults={"value": "15,000 req/s", "description": "Peak ingestion capacity without event drops"})
+        ProjectMetric.objects.update_or_create(project=p1, label="UI P99 Latency", defaults={"value": "24ms", "description": "Measured across WebSocket live dashboard sessions"})
+        ProjectMetric.objects.update_or_create(project=p1, label="Lighthouse Score", defaults={"value": "100/100", "description": "Optimized Core Web Vitals, accessibility, and PWA score"})
 
-        ArchitectureNode.objects.get_or_create(project=p1, component_name="Ingestion Gateway", role="Fast stateless DRF endpoint performing token validation and HMAC signature checks", order=1)
-        ArchitectureNode.objects.get_or_create(project=p1, component_name="Redis Stream Buffer", role="Decouples API ingestion from DB writes; buffers up to 500k burst messages", order=2)
-        ArchitectureNode.objects.get_or_create(project=p1, component_name="Celery Worker Cluster", role="Consumes stream in batches of 100 with exponential backoff retries", order=3)
-        ArchitectureNode.objects.get_or_create(project=p1, component_name="PostgreSQL Cluster", role="Primary write target with partition pruning by month", order=4)
+        ArchitectureNode.objects.update_or_create(project=p1, component_name="React 19 Client", defaults={"role": "Optimistic UI state, WebSocket client, dynamic theme & Tailwind layout", "order": 1})
+        ArchitectureNode.objects.update_or_create(project=p1, component_name="Ingestion Gateway", defaults={"role": "Fast stateless DRF endpoint performing token validation and HMAC signature checks", "order": 2})
+        ArchitectureNode.objects.update_or_create(project=p1, component_name="Redis Stream Buffer", defaults={"role": "Decouples API ingestion from DB writes; buffers burst messages and broadcasts WebSockets", "order": 3})
+        ArchitectureNode.objects.update_or_create(project=p1, component_name="PostgreSQL Cluster", defaults={"role": "Primary write target with partition pruning by month", "order": 4})
 
-        p2, _ = Project.objects.get_or_create(
-            slug="multi-tenant-saas-core",
+        p2, _ = Project.objects.update_or_create(
+            slug="multi-tenant-saas-workspace",
             defaults={
-                "title": "Scalable Multi-Tenant SaaS Engine",
-                "tagline": "Schema-isolated multi-tenant Django architecture with automated onboarding and tenant metering",
+                "title": "Scalable Multi-Tenant SaaS Workspace",
+                "tagline": "Full-stack enterprise SaaS workspace with interactive dashboard, tenant isolation, and automated billing",
                 "problem_statement": (
-                    "Enterprise B2B clients required strict data isolation, compliance with data residency laws, "
-                    "and dedicated resource allocation while maintaining a unified codebase."
+                    "Enterprise B2B clients required strict data isolation, responsive mobile workspace management, "
+                    "and metered billing while operating on a unified codebase."
                 ),
                 "architecture_overview": (
-                    "Engineered schema-based multi-tenancy utilizing PostgreSQL schemas and custom Django middleware. "
-                    "Built dynamic tenant routing, automated database schema migrations per tenant, and Stripe metered billing webhooks."
+                    "Engineered an intuitive React + TypeScript client alongside schema-isolated PostgreSQL multi-tenancy in Django. "
+                    "Included automated tenant provisioning, Stripe billing webhooks, and dark/light UI modes."
                 ),
                 "key_achievements": [
-                    "Isolated 200+ distinct enterprise customer databases on a single cluster",
-                    "Automated tenant provisioning pipeline in under 3.5 seconds",
-                    "Zero cross-tenant data leakage verified by independent security audits"
+                    "Sub-3.5s automated tenant onboarding from checkout to live interactive dashboard",
+                    "Isolated 200+ distinct enterprise customer workspaces on a single cluster",
+                    "Zero cross-tenant data leakage verified by independent penetration audits"
                 ],
                 "github_url": "https://github.com/octocat/Hello-World",
                 "demo_url": "https://httpbin.org/status/200",
@@ -124,48 +126,48 @@ class Command(BaseCommand):
                 "github_forks": 27
             }
         )
-        p2.tags.set([tag_objs['Django'], tag_objs['PostgreSQL'], tag_objs['Docker'], tag_objs['Kubernetes']])
+        p2.tags.set([tag_objs['React'], tag_objs['TypeScript'], tag_objs['Django'], tag_objs['PostgreSQL'], tag_objs['Docker'], tag_objs['Kubernetes']])
 
-        ProjectMetric.objects.get_or_create(project=p2, label="Provisioning Time", value="3.5s", description="From Stripe payment success to live tenant workspace")
-        ProjectMetric.objects.get_or_create(project=p2, label="Active Tenants", value="200+", description="Running seamlessly on unified infrastructure")
+        ProjectMetric.objects.update_or_create(project=p2, label="Provisioning Time", defaults={"value": "3.5s", "description": "From Stripe checkout to live interactive tenant workspace"})
+        ProjectMetric.objects.update_or_create(project=p2, label="Active Tenants", defaults={"value": "200+", "description": "Running seamlessly on unified infrastructure"})
 
         # 4. Experience
-        e1, _ = Experience.objects.get_or_create(
+        e1, _ = Experience.objects.update_or_create(
             company="CloudScale Systems",
-            role="Lead Backend Engineer",
+            role="Lead Full Stack Engineer",
             defaults={
                 "location": "Remote",
                 "start_date": date(2023, 1, 1),
                 "is_current": True,
-                "summary": "Leading the core backend team in designing scalable microservices and data pipelines.",
+                "summary": "Leading full stack development of reactive dashboards and scalable microservices with React 19, TypeScript, Django, and Redis.",
                 "achievements": [
-                    "Architected high-throughput ingestion microservice serving 10M+ daily events using Django and Redis",
-                    "Spearheaded database query optimization initiative, reducing slow query occurrences by 75%",
-                    "Mentored 6 backend engineers and established standard CI/CD and automated testing guidelines"
+                    "Architected high-throughput ingestion microservice and real-time dashboard serving 10M+ daily events",
+                    "Modernized client codebase to React 19 and Tailwind CSS, improving Core Web Vitals LCP by 45%",
+                    "Mentored 6 full stack engineers and established standard CI/CD and automated testing guidelines"
                 ],
                 "order": 1
             }
         )
-        e1.tags.set([tag_objs['Django'], tag_objs['Python'], tag_objs['PostgreSQL'], tag_objs['Redis'], tag_objs['Docker']])
+        e1.tags.set([tag_objs['React'], tag_objs['TypeScript'], tag_objs['Django'], tag_objs['Python'], tag_objs['PostgreSQL'], tag_objs['Redis'], tag_objs['Docker']])
 
-        e2, _ = Experience.objects.get_or_create(
+        e2, _ = Experience.objects.update_or_create(
             company="NexTech Solutions",
-            role="Backend Software Engineer",
+            role="Full Stack Software Engineer",
             defaults={
                 "location": "London, UK",
                 "start_date": date(2021, 3, 1),
                 "end_date": date(2022, 12, 31),
                 "is_current": False,
-                "summary": "Built core REST APIs, payment integrations, and background worker queues.",
+                "summary": "Built responsive client interfaces, core REST APIs, payment integrations, and background worker queues.",
                 "achievements": [
-                    "Integrated Stripe Billing API with webhook signature verification and idempotent charge handling",
-                    "Implemented Redis caching layer, dropping average response latency from 180ms to 28ms",
-                    "Authored automated test suite reaching 88% branch coverage"
+                    "Developed client-facing subscription portal in React with real-time Stripe payment status updates",
+                    "Implemented Redis caching layer, dropping average API response latency from 180ms to 28ms",
+                    "Authored automated frontend and backend test suites reaching 88% branch coverage"
                 ],
                 "order": 2
             }
         )
-        e2.tags.set([tag_objs['Django'], tag_objs['Python'], tag_objs['PostgreSQL'], tag_objs['Celery']])
+        e2.tags.set([tag_objs['React'], tag_objs['Django'], tag_objs['Python'], tag_objs['PostgreSQL'], tag_objs['Celery']])
 
         # 5. Education
         Education.objects.get_or_create(
