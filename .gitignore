@@ -3,3 +3,5 @@
 venv/
 backend/PORTFOLIO_BACKEND_BLUEPRINT.md
 db.sqlite3
+.env
+.env.example
