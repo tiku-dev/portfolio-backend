@@ -14,6 +14,9 @@ class Command(BaseCommand):
         tags_data = [
             ("React", "frontend", "si-react", "#61DAFB"),
             ("TypeScript", "frontend", "si-typescript", "#3178C6"),
+            ("Flutter", "frontend", "si-flutter", "#02569B"),
+            ("Dart", "backend", "si-dart", "#0175C2"),
+            ("JavaScript", "frontend", "si-javascript", "#F7DF1E"),
             ("Next.js", "frontend", "si-nextdotjs", "#000000"),
             ("Tailwind CSS", "frontend", "si-tailwindcss", "#06B6D4"),
             ("Django", "backend", "si-django", "#092E20"),
@@ -41,19 +44,20 @@ class Command(BaseCommand):
         profile, _ = BioProfile.objects.update_or_create(
             full_name="Tiku Faith",
             defaults={
-                "headline": "Senior Full Stack & Systems Engineer",
+                "headline": "Intermediate Full-Stack Software Engineer | Python, JavaScript & Dart",
                 "summary": (
-                    "Full Stack Engineer specializing in reactive web applications, resilient distributed systems, "
-                    "and scalable API architectures using React, TypeScript, Tailwind CSS, Django, PostgreSQL, and Redis. "
-                    "Passionate about end-to-end performance, fluid user interfaces, and engineering excellence."
+                    "Intermediate full-stack software engineer with 2+ years of experience building web and mobile applications "
+                    "in Python, JavaScript and Dart. Shipped TikuShop, an ecommerce platform with online payments, and built "
+                    "an AI-powered file management app during an internship at Digimark Consulting SARL. Completing a Master's "
+                    "in Computer Engineering in 2027 and seeking a remote software engineering role."
                 ),
-                "email": "tikupy1.com",
-                "location": "Global / Remote",
+                "email": "tikufaith10@gmail.com",
+                "location": "Bamenda, Cameroon (open to remote)",
                 "github_url": "https://github.com/tiku-dev",
-                "linkedin_url": "https://linkedin.com/in/tiku-dev",
-                "website_url": "https://tiku-dev.github.io",
+                "linkedin_url": "https://www.linkedin.com/in/tiku-faith-2305103a3",
+                "website_url": "https://tikufaith.tikushop.com",
                 "available_for_hire": True,
-                "availability_notice": "Available for Senior Full Stack & Lead Roles"
+                "availability_notice": "Open to Remote Software Engineering Roles"
             }
         )
 
@@ -132,53 +136,51 @@ class Command(BaseCommand):
         ProjectMetric.objects.update_or_create(project=p2, label="Active Tenants", defaults={"value": "200+", "description": "Running seamlessly on unified infrastructure"})
 
         # 4. Experience
-        e1, _ = Experience.objects.update_or_create(
-            company="CloudScale Systems",
-            role="Lead Full Stack Engineer",
-            defaults={
-                "location": "Remote",
-                "start_date": date(2023, 1, 1),
-                "is_current": True,
-                "summary": "Leading full stack development of reactive dashboards and scalable microservices with React 19, TypeScript, Django, and Redis.",
-                "achievements": [
-                    "Architected high-throughput ingestion microservice and real-time dashboard serving 10M+ daily events",
-                    "Modernized client codebase to React 19 and Tailwind CSS, improving Core Web Vitals LCP by 45%",
-                    "Mentored 6 full stack engineers and established standard CI/CD and automated testing guidelines"
-                ],
-                "order": 1
-            }
-        )
-        e1.tags.set([tag_objs['React'], tag_objs['TypeScript'], tag_objs['Django'], tag_objs['Python'], tag_objs['PostgreSQL'], tag_objs['Redis'], tag_objs['Docker']])
+        Experience.objects.all().delete()
 
-        e2, _ = Experience.objects.update_or_create(
-            company="NexTech Solutions",
-            role="Full Stack Software Engineer",
-            defaults={
-                "location": "London, UK",
-                "start_date": date(2021, 3, 1),
-                "end_date": date(2022, 12, 31),
-                "is_current": False,
-                "summary": "Built responsive client interfaces, core REST APIs, payment integrations, and background worker queues.",
-                "achievements": [
-                    "Developed client-facing subscription portal in React with real-time Stripe payment status updates",
-                    "Implemented Redis caching layer, dropping average API response latency from 180ms to 28ms",
-                    "Authored automated frontend and backend test suites reaching 88% branch coverage"
-                ],
-                "order": 2
-            }
+        e1 = Experience.objects.create(
+            company="Digimark Consulting SARL",
+            role="Software Engineering Intern",
+            location="Yaoundé, Cameroon",
+            start_date=date(2026, 8, 1),
+            end_date=date(2026, 10, 31),
+            is_current=False,
+            summary="Designed and built a smart file management app that uses AI to carry out file-management jobs described by the user.",
+            achievements=[
+                "Designed and built a smart file management app that uses AI to carry out file-management jobs described by the user.",
+                "Turned user-provided instructions into automated actions on files.",
+                "Delivered the project within a two-month internship, following earlier internships at the same company."
+            ],
+            order=1
         )
-        e2.tags.set([tag_objs['React'], tag_objs['Django'], tag_objs['Python'], tag_objs['PostgreSQL'], tag_objs['Celery']])
+        e1.tags.set([tag_objs['Python'], tag_objs['Django'], tag_objs['React'], tag_objs['JavaScript']])
+
+        e2 = Experience.objects.create(
+            company="Hands-on Full-Stack & Mobile Development",
+            role="Software Developer",
+            location="Bamenda, Cameroon (Remote)",
+            start_date=date(2024, 1, 1),
+            end_date=None,
+            is_current=True,
+            summary="2+ years of hands-on experience building and shipping web and mobile applications in Python, JavaScript and Dart.",
+            achievements=[
+                "Built and shipped full-stack web applications with Django and React, from backend APIs to user interfaces.",
+                "Developed mobile and web features in Flutter, Dart and JavaScript.",
+                "Engineered and launched TikuShop (tikushop.com), an ecommerce platform with online payment integration and product browsing."
+            ],
+            order=2
+        )
+        e2.tags.set([tag_objs['Python'], tag_objs['Django'], tag_objs['React'], tag_objs['JavaScript'], tag_objs['Flutter'], tag_objs['Dart'], tag_objs['PostgreSQL']])
 
         # 5. Education
-        Education.objects.get_or_create(
-            institution="University of Manchester",
-            degree="B.Sc. (Hons)",
-            field_of_study="Computer Science",
-            defaults={
-                "start_year": 2017,
-                "end_year": 2020,
-                "details": "First Class Honours. Focus on Distributed Systems and Software Engineering."
-            }
+        Education.objects.all().delete()
+        Education.objects.create(
+            institution="National Higher Polytechnic Institute (NAHPI)",
+            degree="Master's in Computer Engineering",
+            field_of_study="Computer Engineering",
+            start_year=2022,
+            end_year=2027,
+            details="Completing a Master's in Computer Engineering, Bamenda, Cameroon · Expected 2027"
         )
 
         self.stdout.write(self.style.SUCCESS("🎉 Successfully seeded portfolio with case studies, metrics, and resume!"))

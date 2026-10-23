@@ -3,7 +3,7 @@ import time
 import requests
 from django.utils import timezone
 from apps.projects.models import Project, Tag
-from apps.resume.models import BioProfile, Experience
+from apps.resume.models import BioProfile, Experience, Education
 from apps.contact.models import Inquiry
 
 
@@ -175,23 +175,62 @@ class TerminalCommandDispatcher:
 
             return {"output": "\n".join(lines), "status": "ok"}
 
-        elif target == "experience":
-            exps = Experience.objects.prefetch_related('tags').all()
-            if not exps.exists():
-                return {"output": "No experience records found.", "status": "ok"}
+        elif target in ["experience", "resume"]:
+            profile = BioProfile.objects.first()
+            lines = [
+                "===========================================================",
+                "             TIKU FAITH – EXPERIENCE & RESUME              ",
+                "===========================================================",
+            ]
+            if profile:
+                lines.append(f"Name:     {profile.full_name}")
+                lines.append(f"Location: {profile.location}")
+                lines.append(f"Email:    {profile.email}")
+                lines.append(f"GitHub:   {profile.github_url or 'https://github.com/tiku-dev'}")
+                if profile.linkedin_url:
+                    lines.append(f"LinkedIn: {profile.linkedin_url}")
+                if profile.summary:
+                    lines.append(f"\n[Summary]\n{profile.summary}")
 
-            lines = ["# Work Experience"]
-            for exp in exps:
-                end_str = "Present" if exp.is_current else (exp.end_date.strftime("%b %Y") if exp.end_date else "")
-                lines.append(f"\n### {exp.role} @ {exp.company} ({exp.start_date.strftime('%b %Y')} - {end_str})")
-                if exp.summary:
-                    lines.append(exp.summary)
-                if isinstance(exp.achievements, list):
-                    for ach in exp.achievements:
-                        lines.append(f"  * {ach}")
+            exps = Experience.objects.prefetch_related('tags').all()
+            if exps.exists():
+                lines.append("\n[Work Experience]")
+                for exp in exps:
+                    end_str = "Present" if exp.is_current else (exp.end_date.strftime("%b %Y") if exp.end_date else "")
+                    loc_str = f", {exp.location}" if exp.location else ""
+                    lines.append(f"\n▶ {exp.role} @ {exp.company}{loc_str}")
+                    lines.append(f"  Duration: {exp.start_date.strftime('%b %Y')} – {end_str}")
+                    if exp.summary:
+                        lines.append(f"  Summary:  {exp.summary}")
+                    if isinstance(exp.achievements, list):
+                        for ach in exp.achievements:
+                            lines.append(f"  • {ach}")
+            else:
+                lines.append("\nNo experience records found.")
+
+            edus = Education.objects.all()
+            if edus.exists():
+                lines.append("\n[Education]")
+                for edu in edus:
+                    end_str = f"Expected {edu.end_year}" if edu.end_year and edu.end_year > 2024 else (str(edu.end_year) if edu.end_year else "Present")
+                    degree_str = edu.degree if edu.field_of_study in edu.degree else f"{edu.degree} in {edu.field_of_study}"
+                    lines.append(f"▶ {degree_str}")
+                    lines.append(f"  {edu.institution} ({end_str})")
+                    if edu.details:
+                        lines.append(f"  {edu.details}")
+
+            lines.append("===========================================================")
             return {"output": "\n".join(lines), "status": "ok"}
 
         return {"output": f"File '{target}' not found.", "status": "error"}
+
+    @classmethod
+    def cmd_experience(cls, args, **kwargs):
+        return cls.cmd_cat(["experience"], **kwargs)
+
+    @classmethod
+    def cmd_resume(cls, args, **kwargs):
+        return cls.cmd_cat(["resume"], **kwargs)
 
     @classmethod
     def cmd_ping(cls, args, **kwargs):
