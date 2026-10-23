@@ -9,3 +9,4 @@ echo "Collecting static assets..."
 python3 manage.py collectstatic --noinput --clear
 
 echo "Vercel build complete."
+
