@@ -62,6 +62,45 @@ class Command(BaseCommand):
         )
 
         # 3. Case Study Projects
+        p0, _ = Project.objects.update_or_create(
+            slug="tikushop",
+            defaults={
+                "title": "TikuShop — Full-Stack Ecommerce Platform",
+                "tagline": "Production ecommerce web platform with online payments, product catalog, cart flows, and order management",
+                "problem_statement": (
+                    "Users needed an intuitive, fast, and secure ecommerce experience to discover products, "
+                    "manage carts with real-time updates, and execute online payments directly from home."
+                ),
+                "architecture_overview": (
+                    "Engineered with a robust Django REST Framework backend and a dynamic React frontend. "
+                    "Integrated secure online payment processing, dynamic product catalog searching, and responsive cart session state."
+                ),
+                "key_achievements": [
+                    "Built and deployed production ecommerce platform at tikushop.com",
+                    "Integrated seamless online payment flow for home checkout",
+                    "Architected robust Django REST APIs paired with reactive modern React frontend",
+                ],
+                "github_url": "",
+                "demo_url": "https://tikushop.com",
+                "health_check_url": "https://tikushop.com",
+                "featured": True,
+                "order": 1,
+                "health_status": "healthy",
+                "github_stars": 0,
+                "github_forks": 0,
+            }
+        )
+        p0.tags.set([tag_objs['Django'], tag_objs['React'], tag_objs['Python'], tag_objs['JavaScript'], tag_objs['PostgreSQL']])
+
+        ProjectMetric.objects.update_or_create(project=p0, label="Platform", defaults={"value": "Production", "description": "Live production ecommerce at tikushop.com"})
+        ProjectMetric.objects.update_or_create(project=p0, label="Payments", defaults={"value": "Online Gateway", "description": "Secure online digital checkout"})
+        ProjectMetric.objects.update_or_create(project=p0, label="Tech Stack", defaults={"value": "Django + React", "description": "Full-stack decoupled architecture"})
+
+        ArchitectureNode.objects.update_or_create(project=p0, component_name="React Frontend Client", defaults={"role": "Dynamic product catalog, interactive cart management, responsive UI", "order": 1})
+        ArchitectureNode.objects.update_or_create(project=p0, component_name="Django REST API", defaults={"role": "Product search endpoints, order processing, and authentication", "order": 2})
+        ArchitectureNode.objects.update_or_create(project=p0, component_name="Payment Gateway Integration", defaults={"role": "Online payment processor webhooks and transaction verification", "order": 3})
+        ArchitectureNode.objects.update_or_create(project=p0, component_name="PostgreSQL Database", defaults={"role": "Relational storage for products, orders, categories, and customer data", "order": 4})
+
         p1, _ = Project.objects.update_or_create(
             slug="collaborative-analytics-platform",
             defaults={
@@ -85,7 +124,7 @@ class Command(BaseCommand):
                 "demo_url": "https://httpbin.org/status/200",
                 "health_check_url": "https://httpbin.org/status/200",
                 "featured": True,
-                "order": 1,
+                "order": 2,
                 "health_status": "healthy",
                 "github_stars": 342,
                 "github_forks": 48
@@ -124,7 +163,7 @@ class Command(BaseCommand):
                 "demo_url": "https://httpbin.org/status/200",
                 "health_check_url": "https://httpbin.org/status/200",
                 "featured": True,
-                "order": 2,
+                "order": 3,
                 "health_status": "healthy",
                 "github_stars": 190,
                 "github_forks": 27

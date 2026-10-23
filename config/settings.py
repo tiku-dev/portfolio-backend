@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -167,7 +168,19 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 # Email backend (Console for local development)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = 'portfolio-backend@example.com'
-NOTIFICATION_EMAIL = 'admin@example.com'
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    DEFAULT_FROM_EMAIL = 'portfolio-backend@example.com'
+    NOTIFICATION_EMAIL = 'tikupy1@gmail.com'
+
+
+# Email backend (Console for local development, SMTP via env in production)
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() == 'true'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'portfolio@tiku.dev')
+NOTIFICATION_EMAIL = os.getenv('NOTIFICATION_EMAIL', 'tikufaith10@gmail.com')
 

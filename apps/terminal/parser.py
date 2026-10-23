@@ -73,6 +73,7 @@ class TerminalCommandDispatcher:
             f"Headline:     {profile.headline}",
             f"Location:     {profile.location}",
             f"Email:        {profile.email}",
+            f"WhatsApp:     +237 671 486 996 (https://wa.me/237671486996)",
             f"Status:       {status_line} - {profile.availability_notice}",
             f"GitHub:       {profile.github_url or 'N/A'}",
             f"LinkedIn:     {profile.linkedin_url or 'N/A'}",
@@ -186,6 +187,7 @@ class TerminalCommandDispatcher:
                 lines.append(f"Name:     {profile.full_name}")
                 lines.append(f"Location: {profile.location}")
                 lines.append(f"Email:    {profile.email}")
+                lines.append(f"WhatsApp: +237 671 486 996 (https://wa.me/237671486996)")
                 lines.append(f"GitHub:   {profile.github_url or 'https://github.com/tiku-dev'}")
                 if profile.linkedin_url:
                     lines.append(f"LinkedIn: {profile.linkedin_url}")
