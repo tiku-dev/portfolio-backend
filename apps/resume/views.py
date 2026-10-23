@@ -32,8 +32,8 @@ class ResumeDataView(APIView):
 
 class ResumePDFDownloadView(APIView):
     """
-    Generates and streams a freshly compiled ATS-compliant PDF resume.
-    Supports optional ?focus=backend or ?focus=devops parameter.
+    Streams the authored ATS-compliant PDF resume from assets/media,
+    or falls back to dynamically compiled PDF.
     """
     permission_classes = [AllowAny]
 
@@ -48,6 +48,24 @@ class ResumePDFDownloadView(APIView):
             )
         except Exception:
             pass
+
+        # Check if authored resume PDF exists in media or assets folder
+        from django.conf import settings
+        from pathlib import Path
+        base_dir = Path(settings.BASE_DIR)
+        candidates = [
+            base_dir / 'media' / 'Tiku-Faith-Software-Engineer-Resume.pdf',
+            base_dir / 'media' / 'resume.pdf',
+            base_dir.parent / 'frontend' / 'src' / 'assets' / 'Tiku Faith – Software Engineer Resume.pdf',
+        ]
+        for candidate in candidates:
+            if candidate.exists():
+                return FileResponse(
+                    open(candidate, 'rb'),
+                    as_attachment=True,
+                    filename="Tiku-Faith-Software-Engineer-Resume.pdf",
+                    content_type='application/pdf'
+                )
 
         pdf_buffer = generate_resume_pdf(focus_category=focus)
         filename = f"Resume_{focus.capitalize() if focus else 'Backend'}.pdf"
