@@ -61,6 +61,7 @@ class APIRootDirectoryView(APIView):
 
 
 urlpatterns = [
+    path('', APIRootDirectoryView.as_view(), name='root-index'),
     path('admin/', admin.site.urls),
     path('api/health/', HealthCheckView.as_view(), name='health-check'),
     path('api/v1/', APIRootDirectoryView.as_view(), name='api-root'),
