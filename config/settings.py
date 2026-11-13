@@ -19,7 +19,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = os.getenv('DEBUG', 'True').strip().lower() in ('true', '1', 'yes')
-DEBUG=True
+DEBUG = False
 
 _raw_hosts = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0,.vercel.app')
 if _raw_hosts.strip() == '*':
@@ -98,9 +98,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-if not DEBUG:
-
-    tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
+if not DEBUG and os.getenv("DATABASE_URL"):
+    db_url = os.getenv("DATABASE_URL", "").strip("'\"")
+    tmpPostgres = urlparse(db_url)
+    options = dict(parse_qsl(tmpPostgres.query))
+    options.pop('channel_binding', None)
 
     DATABASES = {
         'default': {
@@ -109,8 +111,8 @@ if not DEBUG:
             'USER': tmpPostgres.username,
             'PASSWORD': tmpPostgres.password,
             'HOST': tmpPostgres.hostname,
-            'PORT': 5432,
-            'OPTIONS': dict(parse_qsl(tmpPostgres.query)),
+            'PORT': tmpPostgres.port or 5432,
+            'OPTIONS': options,
         }
     }
 else:
