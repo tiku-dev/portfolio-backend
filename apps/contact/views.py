@@ -81,5 +81,6 @@ class InquiryListView(generics.ListAPIView):
     """
     permission_classes = [IsAuthenticated]
     serializer_class = InquiryListSerializer
+    pagination_class = None
     queryset = Inquiry.objects.all().order_by('-created_at')
 
