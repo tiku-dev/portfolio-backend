@@ -54,6 +54,9 @@ class APIRootDirectoryView(APIView):
                 'terminal_cli': f"{base}terminal/execute/",
                 'telemetry_stats': f"{base}telemetry/stats/",
                 'sync_github': f"{base}sync/github/",
+                'accounts_login': f"{base}accounts/login/",
+                'accounts_refresh': f"{base}accounts/refresh/",
+                'accounts_me': f"{base}accounts/me/",
                 'health_check': request.build_absolute_uri('/api/health/'),
             },
             'terminal_quickstart': 'POST /api/v1/terminal/execute/ with {"command": "help"}'
@@ -62,6 +65,9 @@ class APIRootDirectoryView(APIView):
 
 urlpatterns = [
     path('', APIRootDirectoryView.as_view(), name='root-index'),
+
+    path('api/token/', include('apps.accounts.urls')),
+    path('api/v1/accounts/', include('apps.accounts.urls')),
     path('admin/', admin.site.urls),
     path('api/health/', HealthCheckView.as_view(), name='health-check'),
     path('api/v1/', APIRootDirectoryView.as_view(), name='api-root'),

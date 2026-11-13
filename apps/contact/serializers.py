@@ -19,3 +19,10 @@ class InquiryCreateSerializer(serializers.ModelSerializer):
             attrs['status'] = 'spam'
         return attrs
 
+
+class InquiryListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Inquiry
+        fields = ['id', 'name', 'email', 'subject', 'message', 'status', 'is_spam', 'created_at']
+
+

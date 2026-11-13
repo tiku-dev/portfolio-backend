@@ -1,3 +1,4 @@
+from datetime import timedelta
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -17,8 +18,8 @@ load_dotenv(BASE_DIR / '.env', override=True)
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True').strip().lower() in ('true', '1', 'yes')
-# DEBUG=False
+# DEBUG = os.getenv('DEBUG', 'True').strip().lower() in ('true', '1', 'yes')
+DEBUG=True
 
 _raw_hosts = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0,.vercel.app')
 if _raw_hosts.strip() == '*':
@@ -50,6 +51,7 @@ INSTALLED_APPS = [
 
     # Third-party apps
     'rest_framework',
+    'rest_framework_simplejwt',
     'corsheaders',
     'django_filters',
 
@@ -60,6 +62,7 @@ INSTALLED_APPS = [
     'apps.terminal',
     'apps.telemetry',
     'apps.sync_engine',
+    'apps.accounts',
 ]
 
 MIDDLEWARE = [
@@ -94,42 +97,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-# Database Configuration
-# Uses PostgreSQL when DATABASE_URL is configured (e.g. Vercel production with Neon DB),
-# falling back gracefully to SQLite for local development.
-# DATABASE_URL = os.getenv("DATABASE_URL", "").strip().strip("'").strip('"')
-
-# if DATABASE_URL and (not DEBUG or os.getenv("USE_POSTGRES", "False").lower() == "true"):
-#     try:
-#         try:
-#             import psycopg
-#         except ImportError:
-#             import psycopg2
-
-#         tmpPostgres = urlparse(DATABASE_URL)
-#         DATABASES = {
-#             'default': {
-#                 'ENGINE': 'django.db.backends.postgresql',
-#                 'NAME': tmpPostgres.path.replace('/', ''),
-#                 'USER': tmpPostgres.username,
-#                 'PASSWORD': tmpPostgres.password,
-#                 'HOST': tmpPostgres.hostname,
-#                 'PORT': tmpPostgres.port or 5432,
-#                 'OPTIONS': dict(parse_qsl(tmpPostgres.query)),
-#             }
-#         }
-#     except ImportError:
-#         DATABASES = {
-#             'default': {
-#                 'ENGINE': 'django.db.backends.sqlite3',
-#                 'NAME': BASE_DIR / 'db.sqlite3',
-#             }
-#         }
 
 if not DEBUG:
 
@@ -211,6 +178,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Django REST Framework Settings
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
     'DEFAULT_FILTER_BACKENDS': [
@@ -233,6 +206,17 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.BrowsableAPIRenderer',
     ],
 }
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30), 
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+}
+
+
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 # CORS Settings
 CORS_ALLOW_ALL_ORIGINS = True

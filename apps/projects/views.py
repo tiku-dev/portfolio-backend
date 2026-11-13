@@ -1,10 +1,11 @@
 import time
 import requests
+from django.http import Http404
 from django.utils import timezone
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 
@@ -12,9 +13,9 @@ from .models import Tag, Project
 from .serializers import TagSerializer, ProjectListSerializer, ProjectDetailSerializer
 
 
-class TagListView(generics.ListAPIView):
-    """List all technology tags, optionally filtered by category."""
-    permission_classes = [AllowAny]
+class TagListView(generics.ListCreateAPIView):
+    """List all technology tags, or create a new tag (admin auth required)."""
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter]
@@ -23,27 +24,44 @@ class TagListView(generics.ListAPIView):
     pagination_class = None
 
 
-class ProjectListView(generics.ListAPIView):
-    """List all projects with filtering by category, tag, or featured status."""
-    permission_classes = [AllowAny]
-    serializer_class = ProjectListSerializer
+class ProjectListView(generics.ListCreateAPIView):
+    """List all projects, or create a new project (admin auth required)."""
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['featured', 'health_status', 'tags__slug']
     search_fields = ['title', 'tagline', 'problem_statement']
     ordering_fields = ['order', 'created_at', 'github_stars']
 
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return ProjectDetailSerializer
+        return ProjectListSerializer
+
     def get_queryset(self):
         return Project.objects.prefetch_related('tags', 'metrics').all()
 
 
-class ProjectDetailView(generics.RetrieveAPIView):
-    """Retrieve full case-study details of a project by slug."""
-    permission_classes = [AllowAny]
+class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """Retrieve, update, or delete a project by slug or ID (admin auth required for update/delete)."""
+    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = ProjectDetailSerializer
     lookup_field = 'slug'
 
     def get_queryset(self):
         return Project.objects.prefetch_related('tags', 'metrics', 'architecture_nodes').all()
+
+    def get_object(self):
+        lookup_val = self.kwargs.get(self.lookup_field)
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = None
+        if str(lookup_val).isdigit():
+            obj = queryset.filter(id=int(lookup_val)).first()
+        if not obj:
+            obj = queryset.filter(slug=lookup_val).first()
+        if not obj:
+            raise Http404(f"No project found matching '{lookup_val}'.")
+        self.check_object_permissions(self.request, obj)
+        return obj
 
 
 class ProjectLivePingView(APIView):

@@ -4,10 +4,10 @@ from django.core.mail import send_mail
 from django.conf import settings
 from rest_framework import generics, status
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from .models import Inquiry
-from .serializers import InquiryCreateSerializer
+from .serializers import InquiryCreateSerializer, InquiryListSerializer
 from .throttling import ContactSubmissionThrottle
 
 logger = logging.getLogger(__name__)
@@ -73,3 +73,13 @@ class ContactSubmissionView(generics.CreateAPIView):
             'success': True,
             'message': 'Thank you! Your message has been safely received. I will get back to you shortly.',
         }, status=status.HTTP_201_CREATED)
+
+
+class InquiryListView(generics.ListAPIView):
+    """
+    List inquiries submitted by visitors (authenticated admin only).
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = InquiryListSerializer
+    queryset = Inquiry.objects.all().order_by('-created_at')
+
