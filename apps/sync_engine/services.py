@@ -34,7 +34,10 @@ class GitHubSyncService:
         return username
 
     @classmethod
-    def sync_github_profile(cls, username: str = None, force_refresh: bool = False, sync_projects: bool = True):
+    def sync_github_profile(cls, username: str = None, force_refresh: bool = False, sync_projects: bool = None):
+        if sync_projects is None:
+            sync_projects = getattr(settings, 'GITHUB_AUTO_SYNC_PROJECTS', False)
+
         username = cls.resolve_username(username)
         cache_key = f"{cls.CACHE_KEY}_{username}"
 

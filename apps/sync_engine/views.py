@@ -23,5 +23,8 @@ class GitHubStatsView(APIView):
             else:
                 username = 'tiku-dev'
 
-        data = GitHubSyncService.sync_github_profile(username=username, force_refresh=force, sync_projects=True)
+        sync_projects_param = request.query_params.get('sync_projects')
+        sync_projects = sync_projects_param.lower() in ('true', '1') if sync_projects_param is not None else None
+
+        data = GitHubSyncService.sync_github_profile(username=username, force_refresh=force, sync_projects=sync_projects)
         return Response(data, status=status.HTTP_200_OK)

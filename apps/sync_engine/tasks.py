@@ -22,7 +22,7 @@ def sync_github_task():
         if parts:
             username = parts[-1]
 
-    return GitHubSyncService.sync_github_profile(username=username, sync_projects=True)
+    return GitHubSyncService.sync_github_profile(username=username, sync_projects=False)
 
 
 @shared_task

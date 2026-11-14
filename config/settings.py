@@ -18,16 +18,17 @@ load_dotenv(BASE_DIR / '.env', override=True)
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = os.getenv('DEBUG', 'True').strip().lower() in ('true', '1', 'yes')
-DEBUG = False
+DEBUG = os.getenv('DEBUG', 'True').strip().lower() in ('true', '1', 'yes')
+# DEBUG = False
 
-_raw_hosts = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0,.vercel.app')
-if _raw_hosts.strip() == '*':
+_raw_hosts = os.getenv('ALLOWED_HOSTS', '*')
+if _raw_hosts.strip() == '*' or DEBUG:
     ALLOWED_HOSTS = ['*']
 else:
     ALLOWED_HOSTS = [h.strip() for h in _raw_hosts.split(',') if h.strip()]
-    if '.vercel.app' not in ALLOWED_HOSTS:
-        ALLOWED_HOSTS.append('.vercel.app')
+    for default_host in ['localhost', '127.0.0.1', '0.0.0.0', '.vercel.app']:
+        if default_host not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(default_host)
 
 CSRF_TRUSTED_ORIGINS = [
     'https://*.vercel.app',
@@ -36,6 +37,8 @@ CSRF_TRUSTED_ORIGINS = [
     'https://*.ngrok.io',
     'http://localhost:5173',
     'http://127.0.0.1:5173',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
 ]
 
 
@@ -242,3 +245,10 @@ else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
     DEFAULT_FROM_EMAIL = 'portfolio-backend@example.com'
     NOTIFICATION_EMAIL = 'tikufaith10@gmail.com'
+
+# GitHub Integration & Auto-Sync Settings
+# Set to False to prevent GitHub repos from automatically creating or overwriting Project records in the DB
+GITHUB_TOKEN = os.getenv('GITHUB_TOKEN', '')
+GITHUB_USERNAME = os.getenv('GITHUB_USERNAME', 'tiku-dev')
+GITHUB_AUTO_SYNC_PROJECTS = os.getenv('GITHUB_AUTO_SYNC_PROJECTS', 'False').strip().lower() in ('true', '1', 'yes')
+
