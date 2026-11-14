@@ -4,7 +4,8 @@ venv/
 
 # Environment variables & secrets
 .env
-
+*.env.example
+.env.example
 # SQLite databases
 *.sqlite3
 *.sqlite3-journal
